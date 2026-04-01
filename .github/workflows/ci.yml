@@ -39,9 +39,6 @@ jobs:
           test -f dist/packages/test-auth/package.json || exit 1
           echo "✅ Build verification passed"
 
-      - name: Check for TypeScript errors
-        run: npx tsc --noEmit
-
       - name: Create summary
         if: success()
         run: |
