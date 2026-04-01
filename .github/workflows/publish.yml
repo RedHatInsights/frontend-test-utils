@@ -1,0 +1,84 @@
+name: Publish Packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish (e.g., test-auth)'
+        required: true
+        type: string
+      tag:
+        description: 'npm tag (e.g., latest, beta)'
+        required: false
+        default: 'latest'
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for npm provenance
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Determine package to publish
+        id: package
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            # Extract package name from release tag (e.g., test-auth@1.0.0 -> test-auth)
+            PACKAGE=$(echo "${{ github.event.release.tag_name }}" | sed 's/@.*//')
+            echo "name=$PACKAGE" >> $GITHUB_OUTPUT
+
+            # Extract version from release tag
+            VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/.*@//')
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            echo "name=${{ inputs.package }}" >> $GITHUB_OUTPUT
+            echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update package version
+        if: github.event_name == 'release'
+        run: |
+          cd dist/packages/${{ steps.package.outputs.name }}
+          npm version ${{ steps.package.outputs.version }} --no-git-tag-version
+
+      - name: Publish to npm
+        run: |
+          cd dist/packages/${{ steps.package.outputs.name }}
+          npm publish --access public --tag ${{ steps.package.outputs.tag }} --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create summary
+        run: |
+          echo "## Published Package" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **Package:** @frontend-test-utils/${{ steps.package.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.package.outputs.version }}" ]; then
+            echo "🏷️ **Version:** ${{ steps.package.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "🔖 **Tag:** ${{ steps.package.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Install with:" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npm install @frontend-test-utils/${{ steps.package.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

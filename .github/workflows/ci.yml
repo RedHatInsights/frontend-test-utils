@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          echo "Verifying test-auth package build..."
+          test -f dist/packages/test-auth/src/index.js || exit 1
+          test -f dist/packages/test-auth/src/auth.js || exit 1
+          test -f dist/packages/test-auth/src/global-setup.js || exit 1
+          test -f dist/packages/test-auth/package.json || exit 1
+          echo "✅ Build verification passed"
+
+      - name: Check for TypeScript errors
+        run: npx tsc --noEmit
+
+      - name: Create summary
+        if: success()
+        run: |
+          echo "## Build Successful ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Node.js version: ${{ matrix.node-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Built Packages" >> $GITHUB_STEP_SUMMARY
+          echo "- test-auth" >> $GITHUB_STEP_SUMMARY

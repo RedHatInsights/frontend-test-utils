@@ -45,13 +45,30 @@ npm run build:test-auth
 
 ### Publishing
 
-To publish a package to npm:
+Packages are automatically published to npm via GitHub Actions when you create a release.
 
+**To publish a new version:**
+
+1. Create a git tag with format `<package-name>@<version>`:
+   ```bash
+   git tag test-auth@1.0.0
+   git push origin test-auth@1.0.0
+   ```
+
+2. Create a GitHub Release from that tag
+
+3. The package will be automatically built and published to npm
+
+**Manual publishing:**
+
+If you need to publish manually:
 ```bash
-npm run publish:test-auth
+npm run build:test-auth
+cd dist/packages/test-auth
+npm publish
 ```
 
-**Note:** Make sure you're authenticated to npm and have the appropriate permissions.
+See [Publishing Guide](./.github/PUBLISHING.md) for detailed instructions.
 
 ## Adding New Packages
 
