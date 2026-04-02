@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@redhat-cloud-services/playwright-test-auth": ["packages/test-auth/src/index.ts"]
+      "@redhat-cloud-services/playwright-test-auth": ["packages/playwright-test-auth/src/index.ts"]
     },
     "ignoreDeprecations": "6.0"
   },

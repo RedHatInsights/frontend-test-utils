@@ -6,7 +6,7 @@ This is an nx-managed monorepo containing npm packages with common testing utili
 
 ## Packages
 
-### [@redhat-cloud-services/playwright-test-auth](./packages/test-auth)
+### [@redhat-cloud-services/playwright-test-auth](./packages/playwright-test-auth)
 
 Reusable Red Hat SSO authentication utilities for Playwright e2e testing.
 
@@ -16,7 +16,7 @@ Features:
 - TrustArc cookie consent blocking
 - Environment-based configuration
 
-[View package documentation →](./packages/test-auth/README.md)
+[View package documentation →](./packages/playwright-test-auth/README.md)
 
 ## Development
 
@@ -40,7 +40,7 @@ npm run build
 
 Build a specific package:
 ```bash
-npm run build:test-auth
+npm run build:playwright-test-auth
 ```
 
 ### Publishing
@@ -51,8 +51,8 @@ Packages are automatically published to npm via GitHub Actions when you create a
 
 1. Create a git tag with format `<package-name>@<version>`:
    ```bash
-   git tag test-auth@1.0.0
-   git push origin test-auth@1.0.0
+   git tag playwright-test-auth@1.0.0
+   git push origin playwright-test-auth@1.0.0
    ```
 
 2. Create a GitHub Release from that tag
@@ -63,8 +63,8 @@ Packages are automatically published to npm via GitHub Actions when you create a
 
 If you need to publish manually:
 ```bash
-npm run build:test-auth
-cd dist/packages/test-auth
+npm run build:playwright-test-auth
+cd dist/packages/playwright-test-auth
 npm publish
 ```
 

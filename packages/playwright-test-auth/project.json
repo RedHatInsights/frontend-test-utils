@@ -1,7 +1,7 @@
 {
-  "name": "test-auth",
+  "name": "playwright-test-auth",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/test-auth/src",
+  "sourceRoot": "packages/playwright-test-auth/src",
   "projectType": "library",
   "tags": [],
   "targets": {
@@ -9,10 +9,10 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/test-auth",
-        "main": "packages/test-auth/src/index.ts",
-        "tsConfig": "packages/test-auth/tsconfig.lib.json",
-        "assets": ["packages/test-auth/*.md"]
+        "outputPath": "dist/packages/playwright-test-auth",
+        "main": "packages/playwright-test-auth/src/index.ts",
+        "tsConfig": "packages/playwright-test-auth/tsconfig.lib.json",
+        "assets": ["packages/playwright-test-auth/*.md"]
       }
     },
     "publish": {
@@ -20,7 +20,7 @@
       "dependsOn": ["build"],
       "options": {
         "command": "npm publish",
-        "cwd": "dist/packages/test-auth"
+        "cwd": "dist/packages/playwright-test-auth"
       }
     }
   }

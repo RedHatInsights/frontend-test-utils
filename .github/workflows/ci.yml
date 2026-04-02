@@ -32,11 +32,11 @@ jobs:
 
       - name: Verify build output
         run: |
-          echo "Verifying test-auth package build..."
-          test -f dist/packages/test-auth/src/index.js || exit 1
-          test -f dist/packages/test-auth/src/auth.js || exit 1
-          test -f dist/packages/test-auth/src/global-setup.js || exit 1
-          test -f dist/packages/test-auth/package.json || exit 1
+          echo "Verifying playwright-test-auth package build..."
+          test -f dist/packages/playwright-test-auth/src/index.js || exit 1
+          test -f dist/packages/playwright-test-auth/src/auth.js || exit 1
+          test -f dist/packages/playwright-test-auth/src/global-setup.js || exit 1
+          test -f dist/packages/playwright-test-auth/package.json || exit 1
           echo "✅ Build verification passed"
 
       - name: Create summary
@@ -47,4 +47,4 @@ jobs:
           echo "Node.js version: ${{ matrix.node-version }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Built Packages" >> $GITHUB_STEP_SUMMARY
-          echo "- test-auth" >> $GITHUB_STEP_SUMMARY
+          echo "- playwright-test-auth" >> $GITHUB_STEP_SUMMARY

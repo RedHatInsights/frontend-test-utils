@@ -31,8 +31,8 @@ If publishing to `@redhat-cloud-services` scope, make sure you have publish perm
 
 1. Create a git tag with the format: `<package-name>@<version>`
    ```bash
-   git tag test-auth@1.0.0
-   git push origin test-auth@1.0.0
+   git tag playwright-test-auth@1.0.0
+   git push origin playwright-test-auth@1.0.0
    ```
 
 2. Create a GitHub Release from that tag
@@ -48,7 +48,7 @@ If publishing to `@redhat-cloud-services` scope, make sure you have publish perm
 1. Go to **Actions** → **Publish Packages**
 2. Click **Run workflow**
 3. Enter:
-   - **Package**: `test-auth`
+   - **Package**: `playwright-test-auth`
    - **Tag**: `latest` (or `beta`, `next`, etc.)
 4. Click **Run workflow**
 
@@ -61,10 +61,10 @@ This is useful for:
 
 Use semantic versioning with the package name prefix:
 
-- `test-auth@1.0.0` - Major release
-- `test-auth@1.1.0` - Minor release (new features)
-- `test-auth@1.0.1` - Patch release (bug fixes)
-- `test-auth@1.0.0-beta.1` - Pre-release
+- `playwright-test-auth@1.0.0` - Major release
+- `playwright-test-auth@1.1.0` - Minor release (new features)
+- `playwright-test-auth@1.0.1` - Patch release (bug fixes)
+- `playwright-test-auth@1.0.0-beta.1` - Pre-release
 
 ## Publishing Beta Versions
 
@@ -72,8 +72,8 @@ For testing before stable release:
 
 ```bash
 # Create beta tag
-git tag test-auth@1.0.0-beta.1
-git push origin test-auth@1.0.0-beta.1
+git tag playwright-test-auth@1.0.0-beta.1
+git push origin playwright-test-auth@1.0.0-beta.1
 
 # Create release and mark as "pre-release"
 ```
@@ -82,7 +82,7 @@ Or use manual workflow dispatch with tag: `beta`
 
 Install with:
 ```bash
-npm install @redhat-cloud-services/playwright-test-auth@beta
+npm install @redhat-cloud-services/playwright-playwright-test-auth@beta
 ```
 
 ## Troubleshooting
@@ -106,10 +106,10 @@ Check the CI workflow runs to see build errors before publishing.
 
 Verify the package:
 ```bash
-npm view @redhat-cloud-services/playwright-test-auth
+npm view @redhat-cloud-services/playwright-playwright-test-auth
 ```
 
 Install and test:
 ```bash
-npm install @redhat-cloud-services/playwright-test-auth
+npm install @redhat-cloud-services/playwright-playwright-test-auth
 ```

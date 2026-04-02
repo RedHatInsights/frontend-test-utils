@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "nx run-many -t build",
-    "build:test-auth": "nx build test-auth",
-    "publish:test-auth": "nx publish test-auth",
+    "build:playwright-test-auth": "nx build playwright-test-auth",
+    "publish:playwright-test-auth": "nx publish playwright-test-auth",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
