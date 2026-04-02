@@ -23,7 +23,7 @@ This repository uses GitHub Actions to automatically publish packages to npm.
 
 ### 3. Join the npm Organization (if applicable)
 
-If publishing to `@frontend-test-utils` scope, make sure you have publish permissions for that npm organization.
+If publishing to `@redhat-cloud-services` scope, make sure you have publish permissions for that npm organization.
 
 ## Publishing a Package
 
@@ -82,7 +82,7 @@ Or use manual workflow dispatch with tag: `beta`
 
 Install with:
 ```bash
-npm install @frontend-test-utils/test-auth@beta
+npm install @redhat-cloud-services/playwright-test-auth@beta
 ```
 
 ## Troubleshooting
@@ -95,7 +95,7 @@ You can't republish the same version. Increment the version number.
 
 Check that:
 1. `NPM_TOKEN` secret is set correctly
-2. Your npm account has publish permissions for the `@frontend-test-utils` scope
+2. Your npm account has publish permissions for the `@redhat-cloud-services` scope
 3. The token hasn't expired
 
 ### Build fails
@@ -106,10 +106,10 @@ Check the CI workflow runs to see build errors before publishing.
 
 Verify the package:
 ```bash
-npm view @frontend-test-utils/test-auth
+npm view @redhat-cloud-services/playwright-test-auth
 ```
 
 Install and test:
 ```bash
-npm install @frontend-test-utils/test-auth
+npm install @redhat-cloud-services/playwright-test-auth
 ```

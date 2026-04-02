@@ -1,5 +1,5 @@
 {
-  "name": "@frontend-test-utils/test-auth",
+  "name": "@redhat-cloud-services/playwright-test-auth",
   "version": "0.0.1",
   "description": "Reusable Red Hat SSO authentication utilities for Playwright e2e testing",
   "main": "./src/index.js",

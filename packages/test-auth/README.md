@@ -1,11 +1,11 @@
-# @frontend-test-utils/test-auth
+# @redhat-cloud-services/playwright-test-auth
 
 Reusable Red Hat SSO authentication utilities for Playwright e2e testing.
 
 ## Installation
 
 ```bash
-npm install --save-dev @frontend-test-utils/test-auth
+npm install --save-dev @redhat-cloud-services/playwright-test-auth
 ```
 
 ## Usage
@@ -17,10 +17,9 @@ Configure Playwright to use the global setup to authenticate once and reuse the 
 **playwright.config.ts:**
 ```typescript
 import { defineConfig } from '@playwright/test';
-import { globalSetup } from '@frontend-test-utils/test-auth';
 
 export default defineConfig({
-  globalSetup: require.resolve('@frontend-test-utils/test-auth/global-setup'),
+  globalSetup: require.resolve('@redhat-cloud-services/playwright-test-auth/global-setup'),
   use: {
     baseURL: 'https://stage.foo.redhat.com:1337',
     storageState: 'playwright/.auth/user.json',
@@ -41,7 +40,7 @@ Block cookie prompts in your tests:
 
 ```typescript
 import { test } from '@playwright/test';
-import { disableCookiePrompt } from '@frontend-test-utils/test-auth';
+import { disableCookiePrompt } from '@redhat-cloud-services/playwright-test-auth';
 
 test.beforeEach(async ({ page }) => {
   await disableCookiePrompt(page);
@@ -54,7 +53,7 @@ test.beforeEach(async ({ page }) => {
 For tests that need to handle login manually:
 
 ```typescript
-import { login, ensureLoggedIn } from '@frontend-test-utils/test-auth';
+import { login, ensureLoggedIn } from '@redhat-cloud-services/playwright-test-auth';
 
 // Direct login
 await login(page, username, password);

@@ -1,5 +1,5 @@
 /**
- * @frontend-test-utils/test-auth
+ * @redhat-cloud-services/playwright-test-auth
  *
  * Reusable authentication and login utilities for Playwright e2e testing.
  * This package provides common patterns for handling Red Hat SSO authentication

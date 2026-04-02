@@ -6,7 +6,7 @@ This is an nx-managed monorepo containing npm packages with common testing utili
 
 ## Packages
 
-### [@frontend-test-utils/test-auth](./packages/test-auth)
+### [@redhat-cloud-services/playwright-test-auth](./packages/test-auth)
 
 Reusable Red Hat SSO authentication utilities for Playwright e2e testing.
 

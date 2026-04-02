@@ -72,7 +72,7 @@ jobs:
         run: |
           echo "## Published Package" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Package:** @frontend-test-utils/${{ steps.package.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **Package:** @redhat-cloud-services/playwright-${{ steps.package.outputs.name }}" >> $GITHUB_STEP_SUMMARY
           if [ -n "${{ steps.package.outputs.version }}" ]; then
             echo "🏷️ **Version:** ${{ steps.package.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           fi
@@ -80,5 +80,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Install with:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "npm install @frontend-test-utils/${{ steps.package.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "npm install @redhat-cloud-services/playwright-${{ steps.package.outputs.name }}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
