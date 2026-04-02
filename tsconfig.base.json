@@ -1,0 +1,23 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2020",
+    "module": "esnext",
+    "lib": ["ES2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@redhat-cloud-services/playwright-test-auth": ["packages/playwright-test-auth/src/index.ts"]
+    },
+    "ignoreDeprecations": "6.0"
+  },
+  "exclude": ["node_modules", "tmp"]
+}
