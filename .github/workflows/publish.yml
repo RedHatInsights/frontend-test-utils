@@ -55,12 +55,6 @@ jobs:
             echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Update package version
-        if: github.event_name == 'release'
-        run: |
-          cd dist/packages/${{ steps.package.outputs.name }}
-          npm version ${{ steps.package.outputs.version }} --no-git-tag-version || true
-
       - name: Publish to npm
         run: |
           cd dist/packages/${{ steps.package.outputs.name }}
