@@ -82,7 +82,7 @@ Or use manual workflow dispatch with tag: `beta`
 
 Install with:
 ```bash
-npm install @redhat-cloud-services/playwright-playwright-test-auth@beta
+npm install @redhat-cloud-services/playwright-test-auth@beta
 ```
 
 ## Troubleshooting
@@ -106,10 +106,10 @@ Check the CI workflow runs to see build errors before publishing.
 
 Verify the package:
 ```bash
-npm view @redhat-cloud-services/playwright-playwright-test-auth
+npm view @redhat-cloud-services/playwright-test-auth
 ```
 
 Install and test:
 ```bash
-npm install @redhat-cloud-services/playwright-playwright-test-auth
+npm install @redhat-cloud-services/playwright-test-auth
 ```
