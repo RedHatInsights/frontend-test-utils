@@ -59,7 +59,13 @@ jobs:
         if: github.event_name == 'release'
         run: |
           cd dist/packages/${{ steps.package.outputs.name }}
-          npm version ${{ steps.package.outputs.version }} --no-git-tag-version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          if [ "$CURRENT_VERSION" != "${{ steps.package.outputs.version }}" ]; then
+            npm version ${{ steps.package.outputs.version }} --no-git-tag-version
+            echo "Updated version from $CURRENT_VERSION to ${{ steps.package.outputs.version }}"
+          else
+            echo "Version already set to ${{ steps.package.outputs.version }}, skipping update"
+          fi
 
       - name: Publish to npm
         run: |
