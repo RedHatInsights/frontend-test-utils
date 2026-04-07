@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Reusable snippets of code for consumption in unit, integration, or e2e test pipelines.",
   "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "nx run-many -t build",
     "build:affected": "nx affected -t build",

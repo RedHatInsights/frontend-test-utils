@@ -40,18 +40,14 @@ jobs:
     permissions:
       contents: read  # Required to checkout code
 
-    strategy:
-      matrix:
-        node-version: [18, 20]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -74,7 +70,7 @@ jobs:
         run: |
           echo "## Build Successful ✅" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Node.js version: ${{ matrix.node-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "Node.js version: 20" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Built Packages" >> $GITHUB_STEP_SUMMARY
           echo "- playwright-test-auth" >> $GITHUB_STEP_SUMMARY
