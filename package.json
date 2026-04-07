@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RedHatInsights/frontend-playwright-test-utils.git"
+    "url": "git+https://github.com/RedHatInsights/frontend-test-utils.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/RedHatInsights/frontend-playwright-test-utils/issues"
+    "url": "https://github.com/RedHatInsights/frontend-test-utils/issues"
   },
-  "homepage": "https://github.com/RedHatInsights/frontend-playwright-test-utils#readme",
+  "homepage": "https://github.com/RedHatInsights/frontend-test-utils#readme",
   "devDependencies": {
     "@nx/js": "^22.6.3",
     "@nx/workspace": "^22.6.3",
