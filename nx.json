@@ -56,30 +56,34 @@
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "independent",
-    "git": {
-      "commit": true,
-      "tag": true,
-      "commitMessage": "chore(release): publish {projectName}@{version}"
-    },
     "version": {
+      "git": {
+        "commit": false,
+        "tag": false
+      },
       "conventionalCommits": true,
+      "currentVersionResolver": "registry",
+      "currentVersionResolverMetadata": {
+        "tag": "latest"
+      },
       "preVersionCommand": "npx nx run-many -t build",
       "preserveLocalDependencyProtocols": false,
-      "generatorOptions": {
-        "packageRoot": "dist/packages/{projectName}",
-        "currentVersionResolver": "git-tag",
+      "versionActionsOptions": {
         "skipLockFileUpdate": false
       },
       "manifestRootsToUpdate": [
         "{projectRoot}",
         "dist/packages/{projectName}"
-      ]
+      ],
+      "generatorOptions": {
+        "specifierSource": "conventional-commits"
+      }
     },
     "changelog": {
       "workspaceChangelog": false,
       "projectChangelogs": {
         "file": "{projectRoot}/CHANGELOG.md",
-        "createRelease": "github",
+        "createReleaseInGitHub": true,
         "renderOptions": {
           "authors": false,
           "commitReferences": true,

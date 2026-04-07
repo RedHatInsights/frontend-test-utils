@@ -12,18 +12,20 @@ runs:
 
     - name: Run NX release (version and changelog)
       shell: bash
-      run: |
-        npx nx release --skip-publish --verbose
+      run: npx nx release --skip-publish --verbose
+      # Note: Version bumps and changelog updates are NOT pushed back to GitHub
+      # This is intentional due to protected branch restrictions
+      # The version only exists in the built npm package
 
     - name: Rebuild packages with new versions
       shell: bash
-      run: |
-        npx nx run-many -t build --skipNxCache
+      run: npx nx run-many -t build --skipNxCache
 
-    - name: Push changes and tags
-      shell: bash
-      run: |
-        git push --follow-tags
+    # Skipping git push - version changes remain local to the CI run
+    # - name: Push changes and tags
+    #   shell: bash
+    #   run: |
+    #     git push --follow-tags
 
     - name: Verify built files exist
       shell: bash
@@ -47,11 +49,13 @@ runs:
 
     - name: Run NX release publish
       shell: bash
-      run: |
-        npx nx release publish
+      run: npx nx release publish
+      env:
+        NPM_CONFIG_PROVENANCE: true
 
-    - name: Tag last release
-      shell: bash
-      run: |
-        git tag -f last-release
-        git push origin last-release --force
+    # Skipping tag push - tags remain local to the CI run
+    # - name: Tag last-release
+    #   shell: bash
+    #   run: |
+    #     git tag -f last-release
+    #     git push origin last-release --force
