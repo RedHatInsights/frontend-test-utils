@@ -38,9 +38,14 @@ Build all packages:
 npm run build
 ```
 
+Build only packages affected by recent changes:
+```bash
+npm run build:affected
+```
+
 Build a specific package:
 ```bash
-npm run build:playwright-test-auth
+npx nx build playwright-test-auth
 ```
 
 ### Publishing
@@ -63,9 +68,12 @@ Packages are automatically published to npm via GitHub Actions when you create a
 
 If you need to publish manually:
 ```bash
-npm run build:playwright-test-auth
+# Build the specific package
+npx nx build playwright-test-auth
+
+# Publish from the dist directory
 cd dist/packages/playwright-test-auth
-npm publish
+npm publish --access public
 ```
 
 See [Publishing Guide](./.github/PUBLISHING.md) for detailed instructions.

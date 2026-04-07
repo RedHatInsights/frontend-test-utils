@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "nx run-many -t build",
-    "build:playwright-test-auth": "nx build playwright-test-auth",
-    "publish:playwright-test-auth": "nx publish playwright-test-auth",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:affected": "nx affected -t build",
+    "test": "nx run-many -t test",
+    "test:affected": "nx affected -t test",
+    "lint": "nx run-many -t lint",
+    "lint:affected": "nx affected -t lint"
   },
   "repository": {
     "type": "git",
