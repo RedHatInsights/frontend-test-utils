@@ -1,10 +1,31 @@
 import type { Page } from 'playwright';
 
+// Allowlist of hosts for cookie consent services that should be blocked
+const BLOCKED_COOKIE_CONSENT_HOSTS = new Set([
+  'consent.trustarc.com',
+  'consent-pref.trustarc.com',
+]);
+
+/**
+ * Checks if a URL's hostname matches any blocked cookie consent hosts
+ * @param url - The URL string to check
+ * @returns true if the hostname is in the blocked list, false otherwise
+ */
+function isBlockedCookieConsentHost(url: string): boolean {
+  try {
+    const parsedUrl = new URL(url);
+    return BLOCKED_COOKIE_CONSENT_HOSTS.has(parsedUrl.hostname);
+  } catch {
+    // Invalid URL, don't block it
+    return false;
+  }
+}
+
 // Prevents inconsistent cookie prompting that is problematic for UI testing
 // Note: subsequent calls to page.route may inadvertently override this
 export async function disableCookiePrompt(page: Page) {
   await page.route('**/*', async (route, request) => {
-    if (request.url().includes('consent.trustarc.com') && request.resourceType() !== 'document') {
+    if (isBlockedCookieConsentHost(request.url()) && request.resourceType() !== 'document') {
       await route.abort();
     } else {
       await route.continue();
