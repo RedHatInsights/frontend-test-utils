@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="NxAngularConfigService" workspaceLocation="file://$PROJECT_DIR$/nx.json">
+    <projects>
+      <project name="test-auth" file="file://$PROJECT_DIR$/packages/test-auth/project.json" />
+    </projects>
+  </component>
+</project>

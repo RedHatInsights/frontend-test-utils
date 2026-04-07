@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/RedHatInsights/frontend-test-utils#readme",
   "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
     "@nx/js": "^22.6.3",
     "@nx/workspace": "^22.6.3",
     "@playwright/test": "^1.59.0",

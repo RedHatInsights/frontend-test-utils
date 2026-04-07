@@ -1,0 +1,57 @@
+name: Release Packages
+description: 'Automates the release process using NX: version bump, changelog generation, git tagging, and npm publishing'
+
+runs:
+  using: composite
+  steps:
+    - name: Configure git
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Run NX release (version and changelog)
+      shell: bash
+      run: |
+        npx nx release --skip-publish --verbose
+
+    - name: Rebuild packages with new versions
+      shell: bash
+      run: |
+        npx nx run-many -t build --skipNxCache
+
+    - name: Push changes and tags
+      shell: bash
+      run: |
+        git push --follow-tags
+
+    - name: Verify built files exist
+      shell: bash
+      run: |
+        for package in packages/*/package.json; do
+          pkg_name=$(basename $(dirname "$package"))
+          echo "Verifying dist/packages/$pkg_name..."
+
+          if [ ! -d "dist/packages/$pkg_name" ]; then
+            echo "Error: dist/packages/$pkg_name directory not found"
+            exit 1
+          fi
+
+          if [ ! -f "dist/packages/$pkg_name/package.json" ]; then
+            echo "Error: dist/packages/$pkg_name/package.json not found"
+            exit 1
+          fi
+
+          echo "✅ dist/packages/$pkg_name verified"
+        done
+
+    - name: Run NX release publish
+      shell: bash
+      run: |
+        npx nx release publish
+
+    - name: Tag last release
+      shell: bash
+      run: |
+        git tag -f last-release
+        git push origin last-release --force
