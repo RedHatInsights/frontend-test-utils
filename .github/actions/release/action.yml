@@ -4,12 +4,6 @@ description: 'Automates the release process using NX: version bump, changelog ge
 runs:
   using: composite
   steps:
-    - name: Configure git
-      shell: bash
-      run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-
     - name: Run NX release (version and changelog)
       shell: bash
       run: npx nx release --skip-publish --verbose
