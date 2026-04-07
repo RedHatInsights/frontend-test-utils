@@ -61,12 +61,13 @@ jobs:
           cd dist/packages/${{ steps.package.outputs.name }}
           npm version ${{ steps.package.outputs.version }} --no-git-tag-version
 
+      # Uses npm's trusted publishing (OIDC) instead of NPM_TOKEN secret
+      # Configure trusted publisher on npm: https://www.npmjs.com/settings/redhat-cloud-services/packages
+      # Repository: RedHatInsights/frontend-test-utils
       - name: Publish to npm
         run: |
           cd dist/packages/${{ steps.package.outputs.name }}
           npm publish --access public --tag ${{ steps.package.outputs.tag }} --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create summary
         run: |
