@@ -22,7 +22,7 @@ Features:
 
 ### Prerequisites
 
-- Node.js (v18 or higher recommended)
+- Node.js 20 or higher (required)
 - npm
 
 ### Setup
@@ -50,25 +50,46 @@ npx nx build playwright-test-auth
 
 ### Publishing
 
-Packages are automatically published to npm via GitHub Actions when you create a release.
+This repository uses automated releases powered by NX and conventional commits.
 
-**To publish a new version:**
+**How it works:**
 
-1. Create a git tag with format `<package-name>@<version>`:
-   ```bash
-   git tag playwright-test-auth@1.0.0
-   git push origin playwright-test-auth@1.0.0
-   ```
+1. **Commit with conventional format** - Use conventional commit messages (e.g., `feat:`, `fix:`, `chore:`)
+2. **Merge to master** - When your PR is merged, GitHub Actions automatically:
+   - Analyzes commits to determine version bump (major/minor/patch)
+   - Updates package versions and changelogs
+   - Builds packages
+   - Publishes to npm with provenance
+   - Creates GitHub releases
 
-2. Create a GitHub Release from that tag
+**Commit message format:**
 
-3. The package will be automatically built and published to npm
+```bash
+<type>(<scope>): <description>
+
+# Examples:
+feat(playwright-test-auth): add support for custom login flows
+fix(playwright-test-auth): properly validate URLs in cookie blocking
+chore(ci): update workflow permissions
+```
+
+**Types that trigger releases:**
+- `feat:` - New feature (minor version bump)
+- `fix:` - Bug fix (patch version bump)
+- `perf:` - Performance improvement (patch version bump)
+
+**Breaking changes** trigger major version bumps:
+```bash
+feat(playwright-test-auth)!: remove deprecated login method
+
+BREAKING CHANGE: The old login() function has been removed
+```
 
 **Manual publishing:**
 
-If you need to publish manually:
+If needed, you can publish manually from the built package:
 ```bash
-# Build the specific package
+# Build the package
 npx nx build playwright-test-auth
 
 # Publish from the dist directory
@@ -76,7 +97,7 @@ cd dist/packages/playwright-test-auth
 npm publish --access public
 ```
 
-See [Publishing Guide](./.github/PUBLISHING.md) for detailed instructions.
+See [Publishing Guide](./.github/PUBLISHING.md) for setup instructions and troubleshooting.
 
 ## Adding New Packages
 
@@ -85,10 +106,8 @@ To add a new testing utilities package:
 1. Create a new directory under `packages/`
 2. Add the package configuration files (package.json, tsconfig.json, project.json)
 3. Add the package path to `tsconfig.base.json`
-4. Add build and publish scripts to root `package.json`
+4. NX will automatically detect and manage the new package
 
 ## License
 
 ISC
-
-Test change
