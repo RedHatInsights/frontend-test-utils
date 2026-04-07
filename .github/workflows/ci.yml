@@ -6,11 +6,17 @@ on:
   pull_request:
     branches: [master]
 
+# Default permissions are read-only, jobs override as needed
+permissions:
+  contents: read
+
 jobs:
   commitlint:
     name: Lint Commits
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read  # Required to checkout code
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -31,6 +37,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Required to checkout code
 
     strategy:
       matrix:
@@ -77,8 +85,8 @@ jobs:
     needs: build
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
-      contents: write  # Required for creating releases and pushing tags
-      id-token: write  # Required for npm provenance
+      contents: write  # Required to push commits/tags and create GitHub releases
+      id-token: write  # Required for npm provenance (OIDC-based trusted publishing)
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
