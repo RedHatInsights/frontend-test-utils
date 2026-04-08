@@ -21,8 +21,28 @@ function isBlockedCookieConsentHost(url: string): boolean {
   }
 }
 
-// Prevents inconsistent cookie prompting that is problematic for UI testing
-// Note: subsequent calls to page.route may inadvertently override this
+/**
+ * Disables cookie consent prompts that can interfere with UI testing.
+ *
+ * Blocks requests to TrustArc cookie consent services to prevent inconsistent
+ * cookie prompts during test execution.
+ *
+ * @param page - The Playwright page instance to configure
+ * @returns A promise that resolves when the route handler is set up
+ *
+ * @remarks
+ * Note: subsequent calls to page.route may inadvertently override this handler.
+ * Consider calling this function last in your setup sequence.
+ *
+ * @example
+ * ```typescript
+ * import { disableCookiePrompt } from '@redhat-cloud-services/playwright-test-auth';
+ *
+ * test.beforeEach(async ({ page }) => {
+ *   await disableCookiePrompt(page);
+ * });
+ * ```
+ */
 export async function disableCookiePrompt(page: Page) {
   await page.route('**/*', async (route, request) => {
     if (isBlockedCookieConsentHost(request.url()) && request.resourceType() !== 'document') {
@@ -33,6 +53,31 @@ export async function disableCookiePrompt(page: Page) {
   });
 }
 
+/**
+ * Performs Red Hat SSO login using provided credentials.
+ *
+ * Handles the complete login flow including username entry, password entry,
+ * and verification of successful authentication.
+ *
+ * @param page - The Playwright page instance to perform login on
+ * @param user - The Red Hat username/email
+ * @param password - The user's password
+ * @returns A promise that resolves when login is complete and verified
+ *
+ * @throws {Error} If proxy configuration is incorrect (Lockdown page detected)
+ * @throws {Error} If login credentials are invalid
+ *
+ * @example
+ * ```typescript
+ * import { login } from '@redhat-cloud-services/playwright-test-auth';
+ *
+ * test('authenticated test', async ({ page }) => {
+ *   await page.goto('https://console.redhat.com');
+ *   await login(page, process.env.RH_USER!, process.env.RH_PASSWORD!);
+ *   // Continue with authenticated test...
+ * });
+ * ```
+ */
 export async function login(page: Page, user: string, password: string): Promise<void> {
   // Fail in a friendly way if the proxy config is not set up correctly
   const lockdownCount = await page.locator("text=Lockdown").count();
