@@ -10,10 +10,16 @@ runs:
       # Note: Version bumps and changelog updates are NOT pushed back to GitHub
       # This is intentional due to protected branch restrictions
       # The version only exists in the built npm package
+      #
+      # GitHub releases are created via API (using GITHUB_TOKEN), not git tags
+      # This works even with git.tag: false in nx.json
 
     - name: Rebuild packages with new versions
       shell: bash
       run: npx nx run-many -t build --skipNxCache
+      # This rebuild is necessary! The preVersionCommand builds BEFORE versioning
+      # to validate everything works. This step rebuilds AFTER version bump so the
+      # published packages contain the correct version in built artifacts.
 
     # Skipping git push - version changes remain local to the CI run
     # - name: Push changes and tags
