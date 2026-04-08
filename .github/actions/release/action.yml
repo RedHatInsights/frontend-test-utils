@@ -13,13 +13,11 @@ runs:
       #
       # GitHub releases are created via API (using GITHUB_TOKEN), not git tags
       # This works even with git.tag: false in nx.json
-
-    - name: Rebuild packages with new versions
-      shell: bash
-      run: npx nx run-many -t build --skipNxCache
-      # This rebuild is necessary! The preVersionCommand builds BEFORE versioning
-      # to validate everything works. This step rebuilds AFTER version bump so the
-      # published packages contain the correct version in built artifacts.
+      #
+      # The preVersionCommand builds packages first to validate everything works.
+      # Then NX updates package.json in BOTH source and dist directories via
+      # manifestRootsToUpdate. No rebuild is needed since the source code doesn't
+      # import the version and TypeScript output is unchanged.
 
     # Skipping git push - version changes remain local to the CI run
     # - name: Push changes and tags
