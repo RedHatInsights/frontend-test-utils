@@ -56,12 +56,11 @@
   "release": {
     "projects": ["packages/*"],
     "projectsRelationship": "independent",
-    "git": {
-      "commit": false,
-      "tag": false
-    },
     "version": {
-      "conventionalCommits": true,
+      "git": {
+        "commit": false,
+        "tag": false
+      },
       "currentVersionResolver": "registry",
       "currentVersionResolverMetadata": {
         "tag": "latest"
