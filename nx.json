@@ -61,7 +61,6 @@
       "tag": false
     },
     "version": {
-      "conventionalCommits": true,
       "currentVersionResolver": "registry",
       "currentVersionResolverMetadata": {
         "tag": "latest"
