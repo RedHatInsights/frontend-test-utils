@@ -3,11 +3,16 @@
   "version": "1.0.0",
   "description": "Reusable snippets of code for consumption in unit, integration, or e2e test pipelines.",
   "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "nx run-many -t build",
-    "build:playwright-test-auth": "nx build playwright-test-auth",
-    "publish:playwright-test-auth": "nx publish playwright-test-auth",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:affected": "nx affected -t build",
+    "test": "nx run-many -t test",
+    "test:affected": "nx affected -t test",
+    "lint": "nx run-many -t lint",
+    "lint:affected": "nx affected -t lint"
   },
   "repository": {
     "type": "git",
@@ -21,6 +26,8 @@
   },
   "homepage": "https://github.com/RedHatInsights/frontend-test-utils#readme",
   "devDependencies": {
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
     "@nx/js": "^22.6.3",
     "@nx/workspace": "^22.6.3",
     "@playwright/test": "^1.59.0",

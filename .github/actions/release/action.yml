@@ -1,0 +1,59 @@
+name: Release Packages
+description: 'Automates the release process using NX: version bump, changelog generation, git tagging, and npm publishing'
+
+runs:
+  using: composite
+  steps:
+    - name: Run NX release (version and changelog)
+      shell: bash
+      run: npx nx release --skip-publish --verbose
+      # Note: Version bumps and changelog updates are NOT pushed back to GitHub
+      # This is intentional due to protected branch restrictions
+      # The version only exists in the built npm package
+      #
+      # GitHub releases are created via API (using GITHUB_TOKEN), not git tags
+      # This works even with git.tag: false in nx.json
+      #
+      # The preVersionCommand builds packages first to validate everything works.
+      # Then NX updates package.json in BOTH source and dist directories via
+      # manifestRootsToUpdate. No rebuild is needed since the source code doesn't
+      # import the version and TypeScript output is unchanged.
+
+    # Skipping git push - version changes remain local to the CI run
+    # - name: Push changes and tags
+    #   shell: bash
+    #   run: |
+    #     git push --follow-tags
+
+    - name: Verify built files exist
+      shell: bash
+      run: |
+        for package in packages/*/package.json; do
+          pkg_name=$(basename $(dirname "$package"))
+          echo "Verifying dist/packages/$pkg_name..."
+
+          if [ ! -d "dist/packages/$pkg_name" ]; then
+            echo "Error: dist/packages/$pkg_name directory not found"
+            exit 1
+          fi
+
+          if [ ! -f "dist/packages/$pkg_name/package.json" ]; then
+            echo "Error: dist/packages/$pkg_name/package.json not found"
+            exit 1
+          fi
+
+          echo "✅ dist/packages/$pkg_name verified"
+        done
+
+    - name: Run NX release publish
+      shell: bash
+      run: npx nx release publish
+      env:
+        NPM_CONFIG_PROVENANCE: true
+
+    # Skipping tag push - tags remain local to the CI run
+    # - name: Tag last-release
+    #   shell: bash
+    #   run: |
+    #     git tag -f last-release
+    #     git push origin last-release --force

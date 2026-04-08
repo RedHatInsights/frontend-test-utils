@@ -23,6 +23,11 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
     }
   },
   "namedInputs": {
@@ -50,16 +55,42 @@
   ],
   "release": {
     "projects": ["packages/*"],
+    "projectsRelationship": "independent",
     "version": {
+      "git": {
+        "commit": false,
+        "tag": false
+      },
+      "conventionalCommits": true,
+      "currentVersionResolver": "registry",
+      "currentVersionResolverMetadata": {
+        "tag": "latest"
+      },
+      "preVersionCommand": "npx nx run-many -t build",
+      "preserveLocalDependencyProtocols": false,
+      "versionActionsOptions": {
+        "skipLockFileUpdate": false
+      },
+      "manifestRootsToUpdate": [
+        "{projectRoot}",
+        "dist/packages/{projectName}"
+      ],
       "generatorOptions": {
-        "packageRoot": "dist/packages/{projectName}",
-        "currentVersionResolver": "git-tag"
+        "specifierSource": "conventional-commits"
       }
     },
     "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github"
+      "workspaceChangelog": false,
+      "projectChangelogs": {
+        "file": "{projectRoot}/CHANGELOG.md",
+        "createReleaseInGitHub": true,
+        "renderOptions": {
+          "authors": false,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
       }
-    }
+    },
+    "releaseTagPattern": "{projectName}@{version}"
   }
 }
