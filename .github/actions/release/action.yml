@@ -16,20 +16,25 @@ runs:
       # Note: NX will:
       # 1. Analyze commits since last git tag
       # 2. Determine version bump based on conventional commits
-      # 3. Update package.json in source and dist directories
+      # 3. Update package.json in source directory
       # 4. Generate/update CHANGELOG.md
       # 5. Create a git commit with these changes
       # 6. Create a git tag (e.g., playwright-test-auth@1.2.3)
       #
-      # The preVersionCommand builds packages first to validate everything works.
-      # Then NX updates package.json in BOTH source and dist directories via
-      # manifestRootsToUpdate. No rebuild is needed since the source code doesn't
-      # import the version and TypeScript output is unchanged.
+      # The preVersionCommand builds packages first to validate everything compiles.
+      # After versioning, we rebuild to update the dist/ folder with the new version.
 
     - name: Push changes and tags
       shell: bash
       run: |
         git push --follow-tags
+
+    - name: Rebuild packages with new version
+      shell: bash
+      run: npx nx run-many -t build
+      # Rebuild after versioning to ensure dist/ has the updated package.json version.
+      # The dist/ folder is gitignored, so it still has the old version from the
+      # preVersionCommand build. This rebuild updates it with the new version.
 
     - name: Verify built files exist
       shell: bash
