@@ -34,15 +34,17 @@ Open a PR with your changes. The CI workflow will:
 ### 3. Merge to Master
 
 When your PR is merged, the release workflow automatically:
-1. Analyzes conventional commits since last release
+1. Analyzes conventional commits since last git tag
 2. Determines version bump (major/minor/patch)
 3. Updates package versions in package.json
 4. Generates/updates CHANGELOG.md
-5. Builds packages with new versions
-6. Publishes to npm with provenance
-7. Creates GitHub releases with changelogs
+5. Commits version changes to the repository
+6. Creates git tags for new versions
+7. Builds packages with new versions
+8. Publishes to npm with provenance
+9. Creates GitHub releases with changelogs
 
-**Note:** Version bumps and changelogs are NOT committed back to the repository due to protected branch restrictions. Versions are tracked in the npm registry.
+**Note:** Version bumps and changelogs ARE committed back to the repository and tracked via git tags.
 
 ## Conventional Commit Format
 
@@ -110,12 +112,14 @@ Ensure you have publish permissions for `@redhat-cloud-services` npm organizatio
 
 ## Version Resolution
 
-Current versions are tracked in the npm registry (not git tags). When determining the next version:
+Current versions are tracked via git tags. When determining the next version:
 
-1. NX queries npm for the current published version
-2. Analyzes commits since that version
+1. NX reads git tags to find the current published version
+2. Analyzes commits since that version tag
 3. Determines the appropriate bump based on conventional commits
-4. Publishes the new version
+4. Updates package.json and commits the change
+5. Creates a new git tag (e.g., `playwright-test-auth@1.2.3`)
+6. Publishes the new version to npm
 
 ## Manual Publishing (Fallback)
 
@@ -181,14 +185,14 @@ npm view @redhat-cloud-services/playwright-test-auth
 npm install @redhat-cloud-services/playwright-test-auth
 ```
 
-## Protected Branch Compatibility
+## Git-Based Version Tracking
 
-The release process is designed to work with protected branches:
+The release process uses git as the source of truth for versions:
 
-- ✅ No git commits pushed back to master
-- ✅ No git tags created in repository
-- ✅ Versions tracked in npm registry
-- ✅ GitHub releases still created
-- ✅ Changelogs still generated
+- ✅ Git tags track version history
+- ✅ Version changes committed to repository
+- ✅ Changelogs committed alongside version bumps
+- ✅ GitHub releases created from git tags
+- ✅ No dependency on npm registry for version resolution
 
-This ensures the master branch can have strict protection rules while still enabling automated releases.
+This ensures version history is auditable directly in git and eliminates potential version conflicts from registry caching or downtime.

@@ -57,14 +57,11 @@
     "projects": ["packages/*"],
     "projectsRelationship": "independent",
     "git": {
-      "commit": false,
-      "tag": false
+      "commit": true,
+      "tag": true
     },
     "version": {
-      "currentVersionResolver": "registry",
-      "currentVersionResolverMetadata": {
-        "tag": "latest"
-      },
+      "currentVersionResolver": "git-tag",
       "preVersionCommand": "npx nx run-many -t build",
       "preserveLocalDependencyProtocols": false,
       "versionActionsOptions": {
