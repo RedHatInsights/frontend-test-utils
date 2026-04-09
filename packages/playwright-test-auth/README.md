@@ -2,6 +2,11 @@
 
 Reusable Red Hat SSO authentication utilities for Playwright e2e testing.
 
+## Requirements
+
+- Node.js 20 or higher
+- Playwright 1.40.0 or higher
+
 ## Installation
 
 ```bash
