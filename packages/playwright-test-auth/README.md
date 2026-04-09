@@ -2,6 +2,14 @@
 
 Reusable Red Hat SSO authentication utilities for Playwright e2e testing.
 
+## Features
+
+- Automated Red Hat SSO login
+- Session reuse across test runs
+- TrustArc cookie consent blocking
+- Environment-based configuration
+- TypeScript support included
+
 ## Requirements
 
 - Node.js 20 or higher
