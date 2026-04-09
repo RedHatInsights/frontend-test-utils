@@ -63,6 +63,7 @@
     "version": {
       "currentVersionResolver": "git-tag",
       "preVersionCommand": "npx nx run-many -t build",
+      "specifierSource": "conventional-commits",
       "preserveLocalDependencyProtocols": false,
       "versionActionsOptions": {
         "skipLockFileUpdate": false
@@ -70,10 +71,7 @@
       "manifestRootsToUpdate": [
         "{projectRoot}",
         "dist/packages/{projectName}"
-      ],
-      "generatorOptions": {
-        "specifierSource": "conventional-commits"
-      }
+      ]
     },
     "changelog": {
       "workspaceChangelog": false,
