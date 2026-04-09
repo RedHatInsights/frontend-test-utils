@@ -4,26 +4,32 @@ description: 'Automates the release process using NX: version bump, changelog ge
 runs:
   using: composite
   steps:
+    - name: Configure git
+      shell: bash
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
     - name: Run NX release (version and changelog)
       shell: bash
       run: npx nx release --skip-publish --verbose
-      # Note: Version bumps and changelog updates are NOT pushed back to GitHub
-      # This is intentional due to protected branch restrictions
-      # The version only exists in the built npm package
-      #
-      # GitHub releases are created via API (using GITHUB_TOKEN), not git tags
-      # This works even with git.tag: false in nx.json
+      # Note: NX will:
+      # 1. Analyze commits since last git tag
+      # 2. Determine version bump based on conventional commits
+      # 3. Update package.json in source and dist directories
+      # 4. Generate/update CHANGELOG.md
+      # 5. Create a git commit with these changes
+      # 6. Create a git tag (e.g., playwright-test-auth@1.2.3)
       #
       # The preVersionCommand builds packages first to validate everything works.
       # Then NX updates package.json in BOTH source and dist directories via
       # manifestRootsToUpdate. No rebuild is needed since the source code doesn't
       # import the version and TypeScript output is unchanged.
 
-    # Skipping git push - version changes remain local to the CI run
-    # - name: Push changes and tags
-    #   shell: bash
-    #   run: |
-    #     git push --follow-tags
+    - name: Push changes and tags
+      shell: bash
+      run: |
+        git push --follow-tags
 
     - name: Verify built files exist
       shell: bash
@@ -50,10 +56,3 @@ runs:
       run: npx nx release publish
       env:
         NPM_CONFIG_PROVENANCE: true
-
-    # Skipping tag push - tags remain local to the CI run
-    # - name: Tag last-release
-    #   shell: bash
-    #   run: |
-    #     git tag -f last-release
-    #     git push origin last-release --force
