@@ -106,7 +106,17 @@ To add a new testing utilities package:
 1. Create a new directory under `packages/`
 2. Add the package configuration files (package.json, tsconfig.json, project.json)
 3. Add the package path to `tsconfig.base.json`
-4. NX will automatically detect and manage the new package
+4. Add the package name to the `scope-enum` in `.commitlintrc.json`
+5. NX will automatically detect and manage the new package
+
+See [testing guidelines](./docs/testing-guidelines.md) for detailed package setup instructions.
+
+## Documentation
+
+- [AGENTS.md](./AGENTS.md) — AI agent onboarding guide and repo conventions
+- [docs/testing-guidelines.md](./docs/testing-guidelines.md) — Testing patterns and package development
+- [docs/security-guidelines.md](./docs/security-guidelines.md) — Security considerations
+- [Publishing Guide](./.github/PUBLISHING.md) — Release process and troubleshooting
 
 ## License
 
