@@ -79,6 +79,7 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: build
+    # Only run on push to master (never on workflow_dispatch, etc.)
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
       contents: write  # Required to push commits/tags and create GitHub releases
