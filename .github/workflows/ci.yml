@@ -142,6 +142,11 @@ jobs:
 
           echo "✓ All required CODEOWNERS protections in place"
 
+      - name: Detect obfuscated code
+        run: |
+          chmod +x .github/scripts/detect-obfuscated-code.sh
+          .github/scripts/detect-obfuscated-code.sh
+
       - name: Create verification summary
         if: success()
         run: |
@@ -152,6 +157,7 @@ jobs:
           echo "- npm pack excludes development files" >> $GITHUB_STEP_SUMMARY
           echo "- npm pack excludes TypeScript source files" >> $GITHUB_STEP_SUMMARY
           echo "- CODEOWNERS protects critical infrastructure" >> $GITHUB_STEP_SUMMARY
+          echo "- No obfuscated code patterns detected" >> $GITHUB_STEP_SUMMARY
 
   build:
     runs-on: ubuntu-latest
