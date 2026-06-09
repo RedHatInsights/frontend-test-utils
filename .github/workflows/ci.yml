@@ -75,10 +75,71 @@ jobs:
           echo "### Built Packages" >> $GITHUB_STEP_SUMMARY
           echo "- playwright-test-auth" >> $GITHUB_STEP_SUMMARY
 
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Trivy
+        run: |
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Trivy Source Code Scan
+        run: |
+          trivy fs \
+            --scanners vuln,secret,misconfig \
+            --severity CRITICAL,HIGH \
+            --exit-code 1 \
+            .
+
+      - name: Install YARA
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y yara
+
+      - name: YARA Malware Pattern Scan
+        run: |
+          echo "Scanning for malware patterns with YARA..."
+          find packages -type f \( -name "*.ts" -o -name "*.js" \) ! -path "*/node_modules/*" ! -path "*/dist/*" > /tmp/scan-files.txt
+          if [ -s /tmp/scan-files.txt ]; then
+            yara -r -w .github/yara-rules/javascript-malware.yar packages/ || {
+              echo "ERROR: YARA detected malware patterns"
+              exit 1
+            }
+            echo "YARA scan completed - no malware patterns detected"
+          else
+            echo "No files to scan"
+          fi
+
+      - name: Create security summary
+        if: always()
+        run: |
+          echo "## Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Trivy: CVE, secrets, and misconfiguration scanning" >> $GITHUB_STEP_SUMMARY
+          echo "- YARA: Malware pattern detection" >> $GITHUB_STEP_SUMMARY
+
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, security]
     # Only run on push to master (never on workflow_dispatch, etc.)
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:

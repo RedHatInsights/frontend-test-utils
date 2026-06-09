@@ -143,3 +143,8 @@ vite.config.ts.timestamp-*
 
 # IDE files
 .idea/
+
+# Security scan reports
+trivy-*.json
+socket-*.json
+.socket/cache/

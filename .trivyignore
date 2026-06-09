@@ -1,0 +1,5 @@
+# Trivy ignore file for accepted risks and false positives
+# Format: CVE-ID per line with justification comment
+#
+# Example:
+# CVE-2024-12345  # Dev dependency only, not in production build - expires 2026-09-01
