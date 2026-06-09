@@ -28,15 +28,18 @@ report_finding() {
 # 1. Large hex arrays (potential shellcode)
 echo "Checking for large hex arrays..."
 find packages -type f \( -name "*.ts" -o -name "*.js" \) ! -path "*/node_modules/*" ! -path "*/dist/*" -print0 2>/dev/null | while IFS= read -r -d '' file; do
-  # Count consecutive hex values in a single line
-  while IFS=: read -r line_num line_content; do
-    # Count 0x patterns in this line
-    hex_count=$(echo "$line_content" | grep -o "0x[0-9a-fA-F]\+" | wc -l | tr -d ' ')
-    if [ "$hex_count" -gt 20 ]; then
-      context=$(echo "$line_content" | cut -c1-80)
-      report_finding "HIGH" "$file" "$line_num" "Line contains $hex_count hex values (potential obfuscation)" "$context"
+  # Count total hex values in the entire file (handles multi-line arrays)
+  total_hex=$(grep -o "0x[0-9a-fA-F]\+" "$file" 2>/dev/null | wc -l | tr -d ' ')
+
+  if [ "$total_hex" -gt 20 ]; then
+    # Find the first line with hex values for context
+    first_hex_line=$(grep -n "0x[0-9a-fA-F]" "$file" 2>/dev/null | head -1 || true)
+    if [ -n "$first_hex_line" ]; then
+      line_num=$(echo "$first_hex_line" | cut -d: -f1)
+      context=$(echo "$first_hex_line" | cut -d: -f2- | cut -c1-80)
+      report_finding "HIGH" "$file" "$line_num" "File contains $total_hex hex values (potential shellcode/obfuscation)" "$context"
     fi
-  done < <(grep -n "0x[0-9a-fA-F]" "$file" 2>/dev/null || true)
+  fi
 done
 
 # 2. Large base64 strings
@@ -77,14 +80,27 @@ done
 # 4. String.fromCharCode with many arguments
 echo "Checking for character code obfuscation..."
 find packages -type f \( -name "*.ts" -o -name "*.js" \) ! -path "*/node_modules/*" ! -path "*/dist/*" -print0 2>/dev/null | while IFS= read -r -d '' file; do
-  while IFS=: read -r line_num line_content; do
-    # Count commas in fromCharCode call to estimate number of arguments
-    char_count=$(echo "$line_content" | grep -oE "String\.fromCharCode\([^)]+\)" | tr ',' '\n' | wc -l | tr -d ' ')
-    if [ "$char_count" -gt 20 ]; then
-      context=$(echo "$line_content" | cut -c1-80)
-      report_finding "HIGH" "$file" "$line_num" "String.fromCharCode with $char_count+ arguments (potential obfuscation)" "$context"
-    fi
-  done < <(grep -n "String\.fromCharCode" "$file" 2>/dev/null || true)
+  # Check if file contains String.fromCharCode
+  if grep -q "String\.fromCharCode" "$file" 2>/dev/null; then
+    # Read file content, remove newlines to handle multi-line calls, then count commas
+    file_content=$(cat "$file" | tr '\n' ' ')
+
+    # Extract all fromCharCode calls and count arguments (commas + 1)
+    while read -r call; do
+      if [ -n "$call" ]; then
+        comma_count=$(echo "$call" | tr -cd ',' | wc -c | tr -d ' ')
+        arg_count=$((comma_count + 1))
+
+        if [ "$arg_count" -gt 20 ]; then
+          # Find line number of String.fromCharCode
+          line_num=$(grep -n "String\.fromCharCode" "$file" 2>/dev/null | head -1 | cut -d: -f1)
+          context=$(grep "String\.fromCharCode" "$file" 2>/dev/null | head -1 | cut -c1-80)
+          report_finding "HIGH" "$file" "$line_num" "String.fromCharCode with $arg_count arguments (potential obfuscation)" "$context"
+          break
+        fi
+      fi
+    done < <(echo "$file_content" | grep -oE "String\.fromCharCode\([^)]+\)" || true)
+  fi
 done
 
 # 5. Very long lines in non-minified files
