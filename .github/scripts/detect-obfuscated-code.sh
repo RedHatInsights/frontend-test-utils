@@ -110,7 +110,8 @@ done
 
 # Summary
 echo "=========================================="
-if [ $SUSPICIOUS_FOUND -eq 1 ]; then
+# Check if report file has any content (more reliable than variable in subshells)
+if [ -s "$REPORT_FILE" ]; then
   echo "SUSPICIOUS CODE PATTERNS DETECTED"
   echo "=========================================="
   cat "$REPORT_FILE"
