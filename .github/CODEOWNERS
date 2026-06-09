@@ -3,3 +3,10 @@
 
 # Protect .npmignore files - controls what gets published to npm
 **/.npmignore @RedHatInsights/experience-services-admins
+
+# Protect CI/CD workflows and actions - controls build, test, and release pipeline
+.github/workflows/ @RedHatInsights/experience-services-admins
+.github/actions/ @RedHatInsights/experience-services-admins
+
+# Protect release configuration
+nx.json @RedHatInsights/experience-services-admins
