@@ -35,6 +35,124 @@ jobs:
       - name: Validate commit messages
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
+  verify-npm-package:
+    name: Verify npm Package Security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Verify .npmignore exists
+        run: |
+          echo "Verifying .npmignore files exist..."
+          for package in packages/*/package.json; do
+            pkg_dir=$(dirname "$package")
+            pkg_name=$(basename "$pkg_dir")
+
+            if [ ! -f "$pkg_dir/.npmignore" ]; then
+              echo "ERROR: Missing .npmignore in $pkg_dir"
+              exit 1
+            fi
+
+            echo "✓ $pkg_name has .npmignore"
+          done
+
+      - name: Verify npm pack excludes dev files
+        run: |
+          echo "Verifying npm pack output excludes development files..."
+          for package in packages/*/package.json; do
+            pkg_dir=$(dirname "$package")
+            pkg_name=$(basename "$pkg_dir")
+            dist_dir="dist/$pkg_dir"
+
+            echo "Checking $pkg_name..."
+            cd "$dist_dir"
+
+            # Get list of files that would be published
+            FILES=$(npm pack --dry-run 2>&1 | grep "npm notice" | grep -E "^\s*npm notice [0-9]" | awk '{print $3}')
+
+            # Check for files that should NOT be published
+            FORBIDDEN_FILES=(
+              "project.json"
+              "tsconfig.json"
+              "tsconfig.lib.json"
+              "CHANGELOG.md"
+              ".vscode"
+              ".idea"
+              ".claude"
+              ".env"
+            )
+
+            for forbidden in "${FORBIDDEN_FILES[@]}"; do
+              if echo "$FILES" | grep -q "$forbidden"; then
+                echo "ERROR: Forbidden file '$forbidden' found in npm pack output for $pkg_name"
+                exit 1
+              fi
+            done
+
+            # Check for TypeScript source files (should only have .d.ts, not .ts)
+            if echo "$FILES" | grep -E "\.ts$" | grep -v "\.d\.ts$"; then
+              echo "ERROR: TypeScript source files (.ts) found in npm pack output for $pkg_name"
+              exit 1
+            fi
+
+            echo "✓ $pkg_name npm pack output is clean"
+            cd - > /dev/null
+          done
+
+      - name: Verify CODEOWNERS protections
+        run: |
+          echo "Verifying CODEOWNERS protections..."
+
+          if [ ! -f .github/CODEOWNERS ]; then
+            echo "ERROR: .github/CODEOWNERS file not found"
+            exit 1
+          fi
+
+          # Check for required protections
+          REQUIRED_PROTECTIONS=(
+            "\.npmignore"
+            "\.github/workflows/"
+            "\.github/actions/"
+            "nx\.json"
+          )
+
+          for protection in "${REQUIRED_PROTECTIONS[@]}"; do
+            if ! grep -q "$protection" .github/CODEOWNERS; then
+              echo "ERROR: Missing CODEOWNERS protection for: $protection"
+              exit 1
+            fi
+            echo "✓ CODEOWNERS protects: $protection"
+          done
+
+          echo "✓ All required CODEOWNERS protections in place"
+
+      - name: Create verification summary
+        if: success()
+        run: |
+          echo "## Package Security Verification ✓" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verified" >> $GITHUB_STEP_SUMMARY
+          echo "- .npmignore files exist for all packages" >> $GITHUB_STEP_SUMMARY
+          echo "- npm pack excludes development files" >> $GITHUB_STEP_SUMMARY
+          echo "- npm pack excludes TypeScript source files" >> $GITHUB_STEP_SUMMARY
+          echo "- CODEOWNERS protects critical infrastructure" >> $GITHUB_STEP_SUMMARY
+
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -78,7 +196,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, verify-npm-package]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
       contents: write  # Required to push commits/tags and create GitHub releases
