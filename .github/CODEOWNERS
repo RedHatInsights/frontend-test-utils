@@ -1,0 +1,5 @@
+# CODEOWNERS file for frontend-test-utils
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Protect .npmignore files - controls what gets published to npm
+**/.npmignore @RedHatInsights/experience-services-admins

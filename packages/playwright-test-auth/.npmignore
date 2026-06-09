@@ -1,0 +1,37 @@
+# NX project configuration
+project.json
+
+# TypeScript configuration
+tsconfig.json
+tsconfig.lib.json
+
+# TypeScript source files (only compiled .js and .d.ts are consumed)
+src/**/*.ts
+!src/**/*.d.ts
+
+# Changelog (consumers don't need it)
+CHANGELOG.md
+
+# IDE and editor settings (defense in depth)
+.vscode/
+.idea/
+.claude/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files and coverage
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+coverage/
+.nyc_output/
+
+# Development and build artifacts
+*.log
+npm-debug.log*
+.env
+.env.*
+!.env.example
