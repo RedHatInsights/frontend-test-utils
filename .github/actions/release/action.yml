@@ -36,6 +36,37 @@ runs:
       # The dist/ folder is gitignored, so it still has the old version from the
       # preVersionCommand build. This rebuild updates it with the new version.
 
+    - name: Pre-publish security scan
+      shell: bash
+      run: |
+        echo "Running pre-publish security checks..."
+
+        # Install Trivy
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install -y trivy
+
+        # Scan dist/ for secrets
+        trivy fs \
+          --scanners secret \
+          --severity CRITICAL,HIGH,MEDIUM \
+          --exit-code 1 \
+          dist/
+
+        # Install YARA
+        sudo apt-get update
+        sudo apt-get install -y yara
+
+        # YARA scan of built packages
+        echo "Running YARA malware scan on built packages..."
+        yara -r -w .github/yara-rules/javascript-malware.yar dist/ || {
+          echo "ERROR: YARA detected malware patterns in built packages"
+          exit 1
+        }
+
+        echo "Pre-publish security checks passed"
+
     - name: Verify built files exist
       shell: bash
       run: |

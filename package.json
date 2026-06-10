@@ -12,7 +12,9 @@
     "test": "nx run-many -t test",
     "test:affected": "nx affected -t test",
     "lint": "nx run-many -t lint",
-    "lint:affected": "nx affected -t lint"
+    "lint:affected": "nx affected -t lint",
+    "security:trivy": "echo 'Trivy requires Docker - run: docker run aquasec/trivy fs .'",
+    "security:yara": "yara -r -w .github/yara-rules/javascript-malware.yar packages/"
   },
   "repository": {
     "type": "git",
