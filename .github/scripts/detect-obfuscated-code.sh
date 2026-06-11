@@ -4,7 +4,6 @@
 
 set -e
 
-SUSPICIOUS_FOUND=0
 REPORT_FILE=$(mktemp)
 
 echo "Scanning for obfuscated code patterns..."
@@ -18,7 +17,6 @@ report_finding() {
   local pattern=$4
   local context=$5
 
-  SUSPICIOUS_FOUND=1
   echo "[$severity] $file:$line" | tee -a "$REPORT_FILE"
   echo "  Pattern: $pattern" | tee -a "$REPORT_FILE"
   echo "  Context: $context..." | tee -a "$REPORT_FILE"

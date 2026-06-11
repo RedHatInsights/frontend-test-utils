@@ -83,8 +83,17 @@ jobs:
             echo "Checking $pkg_name..."
             cd "$dist_dir"
 
-            # Get list of files that would be published
-            FILES=$(npm pack --dry-run 2>&1 | grep "npm notice" | grep -E "^\s*npm notice [0-9]" | awk '{print $3}')
+            # Get list of files using JSON output (robust across npm versions)
+            FILES=$(npm pack --dry-run --json 2>&1 | jq -r '.[0].files[].path')
+
+            # Validate we got files (non-empty output)
+            if [ -z "$FILES" ]; then
+              echo "ERROR: Failed to extract file list from npm pack for $pkg_name"
+              echo "This indicates npm pack format may have changed or jq parsing failed"
+              exit 1
+            fi
+
+            echo "Found $(echo "$FILES" | wc -l | tr -d ' ') files in pack output"
 
             # Check for files that should NOT be published
             FORBIDDEN_FILES=(
