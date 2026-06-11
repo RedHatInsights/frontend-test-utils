@@ -84,12 +84,16 @@ jobs:
             cd "$dist_dir"
 
             # Get list of files using JSON output (robust across npm versions)
-            FILES=$(npm pack --dry-run --json 2>&1 | jq -r '.[0].files[].path')
+            # Note: Don't redirect stderr to stdout to avoid contaminating JSON
+            FILES=$(npm pack --dry-run --json | jq -r '.[0].files[].path' 2>&1)
 
-            # Validate we got files (non-empty output)
-            if [ -z "$FILES" ]; then
+            # Validate we got files (non-empty output and not jq errors)
+            if [ -z "$FILES" ] || echo "$FILES" | grep -q "^jq:"; then
               echo "ERROR: Failed to extract file list from npm pack for $pkg_name"
               echo "This indicates npm pack format may have changed or jq parsing failed"
+              if echo "$FILES" | grep -q "^jq:"; then
+                echo "jq error output: $FILES"
+              fi
               exit 1
             fi
 
@@ -142,8 +146,10 @@ jobs:
           )
 
           for protection in "${REQUIRED_PROTECTIONS[@]}"; do
-            if ! grep -q "$protection" .github/CODEOWNERS; then
+            # Check non-comment lines only to prevent bypass via comments
+            if ! grep -v "^#" .github/CODEOWNERS | grep -q "$protection"; then
               echo "ERROR: Missing CODEOWNERS protection for: $protection"
+              echo "Note: Protection must be on a non-comment line"
               exit 1
             fi
             echo "✓ CODEOWNERS protects: $protection"
