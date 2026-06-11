@@ -138,11 +138,12 @@ jobs:
           fi
 
           # Check for required protections
+          # Note: These patterns must exist in non-comment lines of CODEOWNERS
           REQUIRED_PROTECTIONS=(
-            "\.npmignore"
-            "\.github/workflows/"
-            "\.github/actions/"
-            "nx\.json"
+            ".npmignore"         # Protects npm package contents
+            ".github/"           # Protects CI/CD and GitHub config (can be .github/** or .github/)
+            "nx.json"            # Protects release configuration
+            ".github/CODEOWNERS" # CODEOWNERS must protect itself
           )
 
           for protection in "${REQUIRED_PROTECTIONS[@]}"; do
