@@ -35,6 +35,146 @@ jobs:
       - name: Validate commit messages
         run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
+  verify-npm-package:
+    name: Verify npm Package Security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Verify .npmignore exists
+        run: |
+          echo "Verifying .npmignore files exist..."
+          for package in packages/*/package.json; do
+            pkg_dir=$(dirname "$package")
+            pkg_name=$(basename "$pkg_dir")
+
+            if [ ! -f "$pkg_dir/.npmignore" ]; then
+              echo "ERROR: Missing .npmignore in $pkg_dir"
+              exit 1
+            fi
+
+            echo "✓ $pkg_name has .npmignore"
+          done
+
+      - name: Verify npm pack excludes dev files
+        run: |
+          echo "Verifying npm pack output excludes development files..."
+          for package in packages/*/package.json; do
+            pkg_dir=$(dirname "$package")
+            pkg_name=$(basename "$pkg_dir")
+            dist_dir="dist/$pkg_dir"
+
+            echo "Checking $pkg_name..."
+            cd "$dist_dir"
+
+            # Get list of files using JSON output (robust across npm versions)
+            # Note: Don't redirect stderr to stdout to avoid contaminating JSON
+            FILES=$(npm pack --dry-run --json | jq -r '.[0].files[].path' 2>&1)
+
+            # Validate we got files (non-empty output and not jq errors)
+            if [ -z "$FILES" ] || echo "$FILES" | grep -q "^jq:"; then
+              echo "ERROR: Failed to extract file list from npm pack for $pkg_name"
+              echo "This indicates npm pack format may have changed or jq parsing failed"
+              if echo "$FILES" | grep -q "^jq:"; then
+                echo "jq error output: $FILES"
+              fi
+              exit 1
+            fi
+
+            echo "Found $(echo "$FILES" | wc -l | tr -d ' ') files in pack output"
+
+            # Check for files that should NOT be published
+            FORBIDDEN_FILES=(
+              "project.json"
+              "tsconfig.json"
+              "tsconfig.lib.json"
+              "CHANGELOG.md"
+              ".vscode"
+              ".idea"
+              ".claude"
+              ".env"
+            )
+
+            for forbidden in "${FORBIDDEN_FILES[@]}"; do
+              if echo "$FILES" | grep -q "$forbidden"; then
+                echo "ERROR: Forbidden file '$forbidden' found in npm pack output for $pkg_name"
+                exit 1
+              fi
+            done
+
+            # Check for TypeScript source files (should only have .d.ts, not .ts)
+            if echo "$FILES" | grep -E "\.ts$" | grep -v "\.d\.ts$"; then
+              echo "ERROR: TypeScript source files (.ts) found in npm pack output for $pkg_name"
+              exit 1
+            fi
+
+            echo "✓ $pkg_name npm pack output is clean"
+            cd - > /dev/null
+          done
+
+      - name: Verify CODEOWNERS protections
+        run: |
+          echo "Verifying CODEOWNERS protections..."
+
+          if [ ! -f .github/CODEOWNERS ]; then
+            echo "ERROR: .github/CODEOWNERS file not found"
+            exit 1
+          fi
+
+          # Check for required protections
+          # Note: These patterns must exist in non-comment lines of CODEOWNERS
+          REQUIRED_PROTECTIONS=(
+            ".npmignore"         # Protects npm package contents
+            ".github/"           # Protects CI/CD and GitHub config (can be .github/** or .github/)
+            "nx.json"            # Protects release configuration
+            ".github/CODEOWNERS" # CODEOWNERS must protect itself
+          )
+
+          for protection in "${REQUIRED_PROTECTIONS[@]}"; do
+            # Check non-comment lines only to prevent bypass via comments
+            if ! grep -v "^#" .github/CODEOWNERS | grep -q "$protection"; then
+              echo "ERROR: Missing CODEOWNERS protection for: $protection"
+              echo "Note: Protection must be on a non-comment line"
+              exit 1
+            fi
+            echo "✓ CODEOWNERS protects: $protection"
+          done
+
+          echo "✓ All required CODEOWNERS protections in place"
+
+      - name: Detect obfuscated code
+        run: |
+          chmod +x .github/scripts/detect-obfuscated-code.sh
+          .github/scripts/detect-obfuscated-code.sh
+
+      - name: Create verification summary
+        if: success()
+        run: |
+          echo "## Package Security Verification ✓" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verified" >> $GITHUB_STEP_SUMMARY
+          echo "- .npmignore files exist for all packages" >> $GITHUB_STEP_SUMMARY
+          echo "- npm pack excludes development files" >> $GITHUB_STEP_SUMMARY
+          echo "- npm pack excludes TypeScript source files" >> $GITHUB_STEP_SUMMARY
+          echo "- CODEOWNERS protects critical infrastructure" >> $GITHUB_STEP_SUMMARY
+          echo "- No obfuscated code patterns detected" >> $GITHUB_STEP_SUMMARY
+
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -78,8 +218,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    needs: build
-    # Only run on push to master (never on workflow_dispatch, etc.)
+    needs: [build, verify-npm-package]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     permissions:
       contents: write  # Required to push commits/tags and create GitHub releases

@@ -12,7 +12,14 @@
         "outputPath": "dist/packages/playwright-test-auth",
         "main": "packages/playwright-test-auth/src/index.ts",
         "tsConfig": "packages/playwright-test-auth/tsconfig.lib.json",
-        "assets": ["packages/playwright-test-auth/*.md"]
+        "assets": [
+          "packages/playwright-test-auth/*.md",
+          {
+            "input": "packages/playwright-test-auth",
+            "glob": ".npmignore",
+            "output": "."
+          }
+        ]
       }
     },
     "publish": {

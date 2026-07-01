@@ -8,7 +8,8 @@
         "playwright-test-auth",
         "release",
         "deps",
-        "ci"
+        "ci",
+        "security"
       ]
     ]
   }
