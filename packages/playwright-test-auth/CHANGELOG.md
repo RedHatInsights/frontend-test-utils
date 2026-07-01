@@ -1,3 +1,9 @@
+## 0.0.4 (2026-07-01)
+
+### 🚀 Features
+
+- **security:** add .npmignore to prevent publishing dev config files ([c99476f](https://github.com/RedHatInsights/frontend-test-utils/commit/c99476f))
+
 ## 0.0.3 (2026-04-09)
 
 ### 🩹 Fixes
