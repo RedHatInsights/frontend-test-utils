@@ -6,6 +6,7 @@
       "always",
       [
         "playwright-test-auth",
+        "hcc-page-objects",
         "release",
         "deps",
         "ci",

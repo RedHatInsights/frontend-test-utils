@@ -1,0 +1,31 @@
+{
+  "name": "@redhat-cloud-services/hcc-page-objects",
+  "version": "0.0.0",
+  "description": "Reusable page objects for Red Hat Hybrid Cloud Console Playwright e2e testing",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js",
+      "types": "./src/index.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.40.0"
+  },
+  "keywords": [
+    "playwright",
+    "testing",
+    "e2e",
+    "page-objects",
+    "hcc",
+    "red-hat"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
