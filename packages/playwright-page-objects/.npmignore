@@ -1,0 +1,18 @@
+# Source files (compiled output is published)
+tsconfig.json
+tsconfig.lib.json
+project.json
+
+# Development files
+.eslintrc.json
+eslint.config.js
+jest.config.ts
+*.spec.ts
+*.test.ts
+
+# NX cache
+.nx/
+
+# Editor files
+.vscode/
+.idea/

@@ -1,0 +1,34 @@
+{
+  "name": "playwright-page-objects",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/playwright-page-objects/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/playwright-page-objects",
+        "main": "packages/playwright-page-objects/src/index.ts",
+        "tsConfig": "packages/playwright-page-objects/tsconfig.lib.json",
+        "assets": [
+          "packages/playwright-page-objects/*.md",
+          {
+            "input": "packages/playwright-page-objects",
+            "glob": ".npmignore",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "npm publish",
+        "cwd": "dist/packages/playwright-page-objects"
+      }
+    }
+  }
+}
